@@ -36,6 +36,7 @@ function process (buffer) {
 }
 
 exports.add = function (buffer) {
+  jshint.asr = false
   var res = process(buffer)
   return res.replace(/([\s\n]+);([\(\[\/+-])/g, ';$1$2')
 }
