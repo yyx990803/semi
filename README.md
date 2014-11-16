@@ -8,7 +8,7 @@ Add/remove semicolons from your JavaScript.
 
 Because style.
 
-On a more serious note, semicolons in JavaScript are indeed **optional**. Now before you start to talk about how semicolons improve readibility simply because you also write other C-style languages, try to realize that JavaScript is not C, nor is it Java. Its semicolons are designed to be optional and dropping them can be a productivity boon for some people, including me. In fact, languages like Go and Groovy also have optional semicolons and the convention is not using them. You can even use semicolons in Ruby and Python, but obviously nobody does that because once it's actually very easy to identify EOL as the end of a statement where it makes sense.
+On a more serious note, semicolons in JavaScript are indeed **optional**. Now before you start to talk about how semicolons improve readibility simply because you also write other C-style languages, try to realize that JavaScript is not C, nor is it Java. Its semicolons are designed to be optional and dropping them can be a productivity boon for some people, including me. In fact, languages like Go and Groovy also have optional semicolons and the convention is not using them. You can even use semicolons in Ruby and Python, but obviously nobody does that because it's actually very easy to identify EOL as the end of a statement where it makes sense.
 
 Now, if you are adding semicolons everywhere because you fear dropping them can cause mysterious bugs in some weird browsers, break minifiers, or the rules are simply too hard to remember, you are doing it wrong. The correct way to deal with FUD is to confront them and understand the root cause. You should read these following articles:
 
