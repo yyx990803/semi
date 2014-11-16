@@ -2,7 +2,7 @@
 
 > To semicolon or not to semicolon; that is the question
 
-Add/remove semicolons from your JavaScript. Because style.
+Add/remove semicolons from your JavaScript. Because style. This is implemented by [hacking jshint](https://github.com/yyx990803/jshint/commit/e7bb51d7f5e72db2ce98cd76d8657937dac498e5).
 
 ## Usage
 
