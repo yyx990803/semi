@@ -27,7 +27,7 @@ It is implemented by [hacking jshint](https://github.com/yyx990803/jshint/commit
 ``` bash
 npm install -g semi
 # if no --out is specified will overwrite original
-semi [add|remove] <glob> [--out dir]
+semi [add|remove] [files ...] [--out dir]
 ```
 
 ### API

@@ -7,14 +7,14 @@ if (command !== 'add' && command !== 'remove') {
   usage()
 }
 
-var patterns = argv._.slice(1)
-if (!patterns.length) {
+var files = argv._.slice(1)
+if (!files.length) {
   console.log('No files provided.')
   usage()
 }
 
 var semi = require('../index')
-var glob = require('glob')
+var findit = require('findit')
 var fs = require('fs')
 var path = require('path')
 var mkdirp = require('mkdirp')
@@ -23,27 +23,26 @@ if (outDir) {
   mkdirp.sync(outDir)
 }
 
-patterns.forEach(function (pattern) {
-  glob(pattern, function (err, files) {
-    if (err) throw err
-    files.forEach(convert)
-  })
+files.forEach(function (file) {
+  findit(file).on('file', convert)
 })
 
 function convert (file) {
+  if (path.extname(file) !== '.js') return
   fs.readFile(file, 'utf-8', function (err, content) {
     if (err) throw err
     content = semi[command](content)
     var out = outDir
       ? path.join(outDir, path.basename(file))
       : file
+    console.log('converted: ' + out)
     fs.writeFile(out, content)
   })
 }
 
 function usage () {
   console.log()
-  console.log('  Usage: semi [add|remove] <glob> [--out dir]')
+  console.log('  Usage: semi [add|remove] [files...] [--out dir]')
   console.log()
   console.log('  If --out is not specified, will overwrite original.')
   console.log()

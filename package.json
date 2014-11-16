@@ -16,7 +16,7 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
-    "glob": "^4.0.6",
+    "findit": "^2.0.0",
     "jshint-semicolon-hack": "^2.5.10",
     "minimist": "^1.1.0",
     "mkdirp": "^0.5.0"
