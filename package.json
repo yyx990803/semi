@@ -1,10 +1,13 @@
 {
   "name": "semi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "To semicolon or not to semicolon; that is the question",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
+  },
+  "bin": {
+    "semi": "./bin/semi"
   },
   "author": "Evan You",
   "license": "MIT",
