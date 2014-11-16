@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+var argv = require('minimist')(process.argv.slice(2))
+
+var command = argv._[0]
+if (command !== 'add' && command !== 'remove') {
+  console.log('Invalid command: ' + command)
+  usage()
+}
+
+var patterns = argv._.slice(1)
+if (!patterns.length) {
+  console.log('No files provided.')
+  usage()
+}
+
+var semi = require('../index')
+var glob = require('glob')
+var fs = require('fs')
+var path = require('path')
+var mkdirp = require('mkdirp')
+var outDir = argv.out
+if (outDir) {
+  mkdirp.sync(outDir)
+}
+
+patterns.forEach(function (pattern) {
+  glob(pattern, function (err, files) {
+    if (err) throw err
+    files.forEach(convert)
+  })
+})
+
+function convert (file) {
+  fs.readFile(file, 'utf-8', function (err, content) {
+    if (err) throw err
+    content = semi[command](content)
+    var out = outDir
+      ? path.join(outDir, path.basename(file))
+      : file
+    fs.writeFile(out, content)
+  })
+}
+
+function usage () {
+  console.log()
+  console.log('  Usage: semi [add|remove] <glob> [--out dir]')
+  console.log()
+  console.log('  If --out is not specified, will overwrite original.')
+  console.log()
+  process.exit(0)
+}
