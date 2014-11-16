@@ -23,6 +23,11 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal('var a = b')
   })
 
+  it('inline semi before ending brace', function () {
+    var src = 'defer(function () { cb.call(ctx); }, 0);'
+    expect(semi.remove(src)).to.equal('defer(function () { cb.call(ctx) }, 0)')
+  })
+
   it('add newline semi for special initials', function () {
     // +
     var src = "var a = 1;\n  \n++b"
@@ -59,6 +64,11 @@ describe('Add', function () {
     var src = '"use strict"\nvar b = 1'
     expect(semi.add(src)).to.equal('"use strict";\nvar b = 1;')
   })
+
+  // it('comments before newline semi', function () {
+  //   var src = "a()\n/**\n* comments\n*/\n;[]"
+  //   expect(semi.remove(src)).to.equal('a();\n/**\n* comments\n*/\n[];')
+  // })
 
   it('move newline semi to prev line', function () {
     // +
