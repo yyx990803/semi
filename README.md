@@ -22,3 +22,29 @@ var jsWithSemicolons = semi.add(jsWithoutSemicolons)
 // semi.remove(<String>)
 var jsWithoutSemicolons = semi.remove(jsWithSemicolons)
 ```
+
+## Special Cases
+
+Semi will automatically convert between the following two cases (also for newlines that start with `[`, `+`, `-` or a regex literal):
+
+``` js
+// A
+var a = b;
+(function () {
+  /* ... */
+})()
+// B
+var a = b
+;(function () {
+  /* ... */
+})()
+```
+
+However, it will not do anyting to the following, because there's no way for Semi to tell if you actually wanted to write it like this or not.
+
+``` js
+var a = b
+(functon () {
+  /* ... */
+})()
+```
