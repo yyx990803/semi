@@ -13,6 +13,11 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal('var a = 123\na++\n')
   })
 
+  it('newline within multiline comment', function () {
+    var src = "var a = 123;/*\n*/a++;\n"
+    expect(semi.remove(src)).to.equal('var a = 123/*\n*/a++\n')
+  })
+
   it('directive', function () {
     var src = '"use strict";\nvar b = 1'
     expect(semi.remove(src)).to.equal('"use strict"\nvar b = 1')
