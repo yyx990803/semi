@@ -34,6 +34,8 @@ var jsWithSemicolons = semi.add(jsWithoutSemicolons)
 var jsWithoutSemicolons = semi.remove(jsWithSemicolons)
 ```
 
+There's also [Semi for SublimeText3](https://github.com/yyx990803/semi-sublime)!
+
 ## Special Cases
 
 Semi will automatically convert between the following two cases (also for newlines that start with `[`, `+`, `-` or a regex literal):
