@@ -65,10 +65,10 @@ describe('Add', function () {
     expect(semi.add(src)).to.equal('"use strict";\nvar b = 1;')
   })
 
-  // it('comments before newline semi', function () {
-  //   var src = "a()\n/**\n* comments\n*/\n;[]"
-  //   expect(semi.remove(src)).to.equal('a();\n/**\n* comments\n*/\n[];')
-  // })
+  it('comments before newline semi', function () {
+    var src = "a()\n/**\n* comments\n*/\n;[]"
+    expect(semi.add(src)).to.equal('a();\n/**\n* comments\n*/\n[];')
+  })
 
   it('move newline semi to prev line', function () {
     // +
