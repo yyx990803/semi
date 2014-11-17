@@ -46,6 +46,27 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal('a++\n;/a/.test(b)')
   })
 
+  it('should not remove semi for empty statement of if/for/while statement', function () {
+    var src = "{if (x);\n}"
+    expect(semi.remove(src)).to.equal(src)
+
+    var src = "while (--x);\n(x)"
+    expect(semi.remove(src)).to.equal(src)
+
+    var src = "for (;;);\n(x)"
+    expect(semi.remove(src)).to.equal(src)
+
+    var src = "do {} while(x);\n(x)"
+    expect(semi.remove(src)).to.equal(src.replace(/;\n/, '\n;'))
+  })
+
+  it('should not add semi for only statement of if/for/while statement', function () {
+    var src = "while (x)\n(x)"
+    expect(semi.remove(src)).to.equal(src)
+
+    var src = "do {} while(x)\n(x)"
+    expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
+  })
 })
 
 describe('Add', function () {
