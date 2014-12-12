@@ -81,6 +81,8 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal(src)
   })
 
+  // The better coding style for these cases should be add {} ,
+  // but I'm not sure whether it is the duty of this project 
   it('should not add semi for only statement of if/for/while', function () {
     // if
     var src = "if (x)\n  +x"
