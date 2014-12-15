@@ -12,7 +12,7 @@ On a more serious note, some people (including me) feel more comfortable and pro
 
 As a solution to this problem, Semi can add semicolons to files written in a semicolon-less style, and can also remove semicolons from those written with semicolons. This allows you to write code in the style you like and just auto convert it before committing your code.
 
-It is implemented by [hacking jshint](https://github.com/yyx990803/jshint/commit/e7bb51d7f5e72db2ce98cd76d8657937dac498e5), and 100% preserves your original code formatting (other than semicolons). It even takes care of special cases where a newline semicolon is needed (see below).
+It was originally implemented by [hacking jshint](https://github.com/yyx990803/jshint/commit/e7bb51d7f5e72db2ce98cd76d8657937dac498e5) and now by using a custom rule for [ESLint](http://eslint.org/). Semi 100% preserves your original code formatting (other than semicolons). It even takes care of special cases where a newline semicolon is needed (see below).
 
 ## Usage
 
