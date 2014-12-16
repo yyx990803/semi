@@ -57,7 +57,7 @@ However, it will not do anyting to the following, because there's no way for Sem
 
 ``` js
 var a = b
-(functon () {
+(function () {
   /* ... */
 })()
 ```
