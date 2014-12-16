@@ -68,7 +68,7 @@ var testCases = {
       ]
     ],
 
-    'should not remove semi as empty statement of if/for/while': [
+    'should not remove semi for empty statement of if/for/while': [
       // if
       [
         'if (x);\n',
@@ -139,17 +139,16 @@ var testCases = {
       'do { x-- } while (x)\n'
     ],
 
-    // special case. do we really need these?
+    'do...while add': [
+      'do { x-- } while (x)\n+x',
+      'do { x-- } while (x)\n;+x'
+    ],
+    
+    'var statement': [
+      'var x\n+x',
+      'var x\n;+x'
+    ]
 
-    // 'do...while add': [
-    //   'do { x-- } while (x)\n+x',
-    //   'do { x-- } while (x)\n;+x'
-    // ],
-    // 
-    // 'var statement': [
-    //   'var x\n+x',
-    //   'var x\n;+x'
-    // ]
   },
 
   add: {

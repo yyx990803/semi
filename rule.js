@@ -16,7 +16,7 @@ module.exports = function(context) {
 
   var always = context.options[0] !== "never"
 
-  var emptyStatementParentTypes = {
+  var specialStatementParentTypes = {
     IfStatement: true,
     WhileStatement: true,
     ForStatement: true,
@@ -50,9 +50,10 @@ module.exports = function(context) {
    */
   function checkForSemicolon(node) {
 
+    var firstToken = context.getFirstToken(node)
     var lastToken = context.getLastToken(node)
+    var prevToken = context.getTokenBefore(node)
     var nextToken = context.getTokenAfter(node)
-    var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
 
     if (always) {
       // ADD
@@ -62,7 +63,7 @@ module.exports = function(context) {
         context.report(node, lastToken.loc.end, "ADD")
         added = true
       }
-      if (isSpecialNewLine) {
+      if (nextToken && OPT_OUT_PATTERN.test(nextToken.value)) {
         if (lastToken.value === ';') {
           // removing semi from last token of current statement
           context.report(node, lastToken.loc.end, "REMOVE")
@@ -82,21 +83,18 @@ module.exports = function(context) {
         isRemovable(lastToken, nextToken)
       ) {
         context.report(node, node.loc.end, "REMOVE")
-        // handle next token speical case
-        if (isSpecialNewLine) {
-          context.report(nextToken, nextToken.loc.start, "ADD")
-        }
       }
-      // special case: adding leading semicolons for newlines after
-      // var declaration and do...while statements
-      //
-      // if (
-      //   isSpecialNewLine &&
-      //   (lastToken.type !== "Punctuator" || lastToken.value !== ";") &&
-      //   (node.type === 'VariableDeclaration' || node.type === 'DoWhileStatement')
-      // ) {
-      //   context.report(nextToken, nextToken.loc.start, "ADD")
-      // }
+      // add leading semicolon if:
+      if (
+        // is on a newline
+        (!prevToken || firstToken.loc.start.line !== prevToken.loc.end.line) &&
+        // starts with special leading token
+        OPT_OUT_PATTERN.test(firstToken.value) &&
+        // is not the only child statement of if/for/while statements
+        !specialStatementParentTypes[node.parent.type]
+      ) {
+        context.report(node, firstToken.loc.start, "ADD")
+      }
     }
   }
 
@@ -136,16 +134,11 @@ module.exports = function(context) {
     "EmptyStatement": function (node) {
       var lastToken = context.getLastToken(node)
       var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
-      var isSpecialNewLine = OPT_OUT_PATTERN.test(nextToken.value)
-
       if (
         isRemovable(lastToken, nextToken) &&
-        !emptyStatementParentTypes[node.parent.type]
+        !specialStatementParentTypes[node.parent.type]
       ) {
         context.report(node, node.loc.end, "REMOVE")
-        if (!always && isSpecialNewLine) {
-          context.report(nextToken, nextToken.loc.start, "ADD")
-        }
       }
     }
   }
