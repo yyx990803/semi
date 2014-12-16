@@ -28,6 +28,11 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal('defer(function () { cb.call(ctx) }, 0)')
   })
 
+  it('should not remove same line statements', function () {
+    var src = "a++;;; b++;"
+    expect(semi.remove(src)).to.equal('a++; b++')
+  })
+
   it('add newline semi for special initials', function () {
     // +
     var src = "var a = 1;\n  \n++b"
