@@ -65,32 +65,48 @@ module.exports = function(context) {
     var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
 
     if (always) {
+      // ADD
       var added = false
       if (lastToken.type !== "Punctuator" || lastToken.value !== ";") {
+        // missing semi. add semi after last token of current statement
         context.report(node, lastToken.loc.end, "ADD")
         added = true
       }
       if (isSpecialNewLine) {
         if (lastToken.value === ';') {
+          // removing semi from last token of current statement
           context.report(node, lastToken.loc.end, "REMOVE")
           lastToken = context.getLastToken(node, 1)
         }
+        // don't add again if we already added a semicolon
         if (!added) {
+          // add semi to second last token of current statement
           context.report(node, lastToken.loc.end, "ADD")
         }
       }
     } else {
+      // REMOVE
       if (
         lastToken.type === "Punctuator" &&
         lastToken.value === ";" &&
         isRemovable(lastToken, nextToken)
       ) {
         context.report(node, node.loc.end, "REMOVE")
+        // handle next token speical case
+        if (isSpecialNewLine) {
+          context.report(nextToken, nextToken.loc.start, "ADD")
+        }
       }
-      // handle next token speical case
-      if (isSpecialNewLine) {
-        context.report(nextToken, nextToken.loc.start, "ADD")
-      }
+      // special case: adding leading semicolons for newlines after
+      // var declaration and do...while statements
+      //
+      // if (
+      //   isSpecialNewLine &&
+      //   (lastToken.type !== "Punctuator" || lastToken.value !== ";") &&
+      //   (node.type === 'VariableDeclaration' || node.type === 'DoWhileStatement')
+      // ) {
+      //   context.report(nextToken, nextToken.loc.start, "ADD")
+      // }
     }
   }
 
@@ -128,7 +144,6 @@ module.exports = function(context) {
     "ContinueStatement": checkForSemicolon,
     "DoWhileStatement": checkForSemicolon,
     "EmptyStatement": function (node) {
-      console.log(123)
       var lastToken = context.getLastToken(node)
       var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
       var isSpecialNewLine = OPT_OUT_PATTERN.test(nextToken.value)
