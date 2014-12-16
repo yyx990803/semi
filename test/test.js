@@ -98,16 +98,18 @@ describe('Remove', function () {
     expect(semi.remove(src)).to.equal(src)
   })
 
-  // some special cases. do we really need them?
+  it('do...while', function () {
+    // should remove semi
+    var src = "do { x-- } while (x);\n"
+    expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
 
-  // it('do...while', function () {
-  //   // should remove semi
-  //   var src = "do { x-- } while (x);\n"
-  //   expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
-  //   // should add semi
-  //   var src = "do { x-- } while (x)\n+x"
-  //   expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
-  // })
+    // special case. do we really need this?
+
+    // var src = "do { x-- } while (x)\n+x"
+    // expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
+  })
+
+  // special case. do we really need this?
 
   // it('var statement', function () {
   //   // should add semi
