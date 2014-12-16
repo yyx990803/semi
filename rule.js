@@ -26,18 +26,6 @@ module.exports = function(context) {
   //----------------------------------------------------------------------------
   // Helpers
   //----------------------------------------------------------------------------
-  
-  /**
-   * Check if two tokens are on different lines.
-   *
-   * @param {Token} last
-   * @param {Token} next
-   */
-  function isOnNewLine (last, next) {
-    var lastTokenLine = last.loc.end.line
-    var nextTokenLine = next && next.loc.start.line
-    return lastTokenLine !== nextTokenLine
-  }
 
   /**
    * Check if a semicolon is removable. We should only remove the semicolon if:
@@ -48,8 +36,10 @@ module.exports = function(context) {
    * @param {Token} next
    */
   function isRemovable (last, next) {
+    var lastTokenLine = last.loc.end.line
+    var nextTokenLine = next && next.loc.start.line
     var isDivider = next && (next.value === '}' || next.value === ';')
-    return isDivider || isOnNewLine(last, next)
+    return isDivider || (lastTokenLine !== nextTokenLine)
   }
 
   /**
