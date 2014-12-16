@@ -1,172 +1,239 @@
 var expect = require('chai').expect
 var semi = require('../index')
 
-describe('Remove', function () {
+var testCases = {
 
-  it('eof', function () {
-    var src = 'var a = 123;'
-    expect(semi.remove(src)).to.equal('var a = 123')
+  remove: {
+
+    'eof': [
+      'var a = 123;',
+      'var a = 123'
+    ],
+
+    'newline': [
+      'var a = 123;\na++;\n',
+      'var a = 123\na++\n'
+    ],
+
+    'newline within multiline comment': [
+      'var a = 123;/*\n*/a++;\n',
+      'var a = 123/*\n*/a++\n'
+    ],
+
+    'directive': [
+      '"use strict";\nvar b = 1',
+      '"use strict"\nvar b = 1'
+    ],
+
+    'multiple': [
+      'var a = b;;;;;;',
+      'var a = b'
+    ],
+
+    'inline semi before ending brace': [
+      'defer(function () { cb.call(ctx); }, 0);',
+      'defer(function () { cb.call(ctx) }, 0)'
+    ],
+
+    'should not remove same line statements': [
+      'a++;;; b++;',
+      'a++; b++'
+    ],
+
+    'sepcial newlines': [
+      // +
+      [
+        'var a = 1;\n  \n++b',
+        'var a = 1\n  \n;++b'
+      ],
+      // -
+      [
+        'var a = 1;\n  \n--b',
+        'var a = 1\n  \n;--b'
+      ],
+      // [
+      [
+        'a++;\n[1,2,3].forEach()',
+        'a++\n;[1,2,3].forEach()'
+      ],
+      // (
+      [
+        'a++;\n(function () {})()',
+        'a++\n;(function () {})()'
+      ],
+      // /
+      [
+        'a++;\n/a/.test(b)',
+        'a++\n;/a/.test(b)'
+      ]
+    ],
+
+    'should not remove semi as empty statement of if/for/while': [
+      // if
+      [
+        'if (x);\n',
+        'if (x);\n'
+      ],
+      // else if
+      [
+        'if (x);else if (x);\n',
+        'if (x);else if (x);\n'
+      ],
+      // else
+      [
+        'if (x) x\nelse;\n',
+        'if (x) x\nelse;\n'
+      ],
+      // while
+      [
+        'while (--x);\n',
+        'while (--x);\n'
+      ],
+      // for
+      [
+        'for (;;);\n',
+        'for (;;);\n'
+      ],
+      // for...in
+      [
+        'for (var key in obj);\n',
+        'for (var key in obj);\n'
+      ]
+    ],
+
+    'should not add semi for only statement of if/for/while': [
+      // if
+      [
+        'if (x)\n  +x',
+        'if (x)\n  +x'
+      ],
+      // else if
+      [
+        'if (x) x\nelse if (x)\n  +x',
+        'if (x) x\nelse if (x)\n  +x'
+      ],
+      // else
+      [
+        'if (x) x\nelse\n  +x',
+        'if (x) x\nelse\n  +x'
+      ],
+      // while
+      [
+        'while (x)\n  +x',
+        'while (x)\n  +x'
+      ],
+      // for
+      [
+        'for (;;)\n  +x',
+        'for (;;)\n  +x'
+      ],
+      // for...in
+      [
+        'for (var key in obj)\n  +x',
+        'for (var key in obj)\n  +x'
+      ]
+    ],
+
+    'do...while': [
+      'do { x-- } while (x);\n',
+      'do { x-- } while (x)\n'
+    ],
+
+    // special case. do we really need these?
+
+    // 'do...while add': [
+    //   'do { x-- } while (x)\n+x',
+    //   'do { x-- } while (x)\n;+x'
+    // ],
+    // 
+    // 'var statement': [
+    //   'var x\n+x',
+    //   'var x\n;+x'
+    // ]
+  },
+
+  add: {
+
+    'eof': [
+      'var a = 123',
+      'var a = 123;'
+    ],
+
+    'newline': [
+      'var a = 123\na++\n',
+      'var a = 123;\na++;\n'
+    ],
+
+    'directive': [
+      '"use strict"\nvar b = 1',
+      '"use strict";\nvar b = 1;'
+    ],
+
+    'comments before newline semi': [
+      'a()\n/**\n* comments\n*/\n;[]',
+      'a();\n/**\n* comments\n*/\n[];'
+    ],
+
+    'before ending brace': [
+      'function a (x) { x++ }',
+      'function a (x) { x++; }'
+    ],
+
+    'do...while': [
+      'do { x-- } while (x)\n++x',
+      'do { x--; } while (x);\n++x;'
+    ],
+
+    'move newline semi to prev line': [
+      // +
+      [
+        'var a = 1\n  \n;++b',
+        'var a = 1;\n  \n++b;'
+      ],
+      // -
+      [
+        'var a = 1\n  \n;--b',
+        'var a = 1;\n  \n--b;'
+      ],
+      // [
+      [
+        'a++\n;[1,2,3].forEach()',
+        'a++;\n[1,2,3].forEach();'
+      ],
+      // (
+      [
+        'a++\n;(function () {})()',
+        'a++;\n(function () {})();'
+      ],
+      // /
+      [
+        'a++\n;/a/.test(b)',
+        'a++;\n/a/.test(b);'
+      ]
+    ]
+  }
+  
+}
+
+function suite (name) {
+  describe(name, function () {
+    Object.keys(testCases[name]).forEach(function (desc) {
+      var tests = testCases[name][desc]
+      var assert = function (test) {
+        var src = test[0]
+        var expected = test[1]
+        expect(semi[name](src)).to.equal(expected)
+      }
+      it(desc, function () {
+        if (Array.isArray(tests[0])) {
+          tests.forEach(assert)
+        } else {
+          assert(tests)
+        }
+      })
+    })
   })
+}
 
-  it('newline', function () {
-    var src = "var a = 123;\na++;\n"
-    expect(semi.remove(src)).to.equal('var a = 123\na++\n')
-  })
-
-  it('newline within multiline comment', function () {
-    var src = "var a = 123;/*\n*/a++;\n"
-    expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
-  })
-
-  it('directive', function () {
-    var src = '"use strict";\nvar b = 1'
-    expect(semi.remove(src)).to.equal('"use strict"\nvar b = 1')
-  })
-
-  it('multiple', function () {
-    var src = "var a = b;;;;;;"
-    expect(semi.remove(src)).to.equal('var a = b')
-  })
-
-  it('inline semi before ending brace', function () {
-    var src = 'defer(function () { cb.call(ctx); }, 0);'
-    expect(semi.remove(src)).to.equal('defer(function () { cb.call(ctx) }, 0)')
-  })
-
-  it('should not remove same line statements', function () {
-    var src = "a++;;; b++;"
-    expect(semi.remove(src)).to.equal('a++; b++')
-  })
-
-  it('add newline semi for special initials', function () {
-    // +
-    var src = "var a = 1;\n  \n++b"
-    expect(semi.remove(src)).to.equal('var a = 1\n  \n;++b')
-    // -
-    var src = "var a = 1;\n  \n--b"
-    expect(semi.remove(src)).to.equal('var a = 1\n  \n;--b')
-    // [
-    var src = "a++;\n[1,2,3].forEach()"
-    expect(semi.remove(src)).to.equal('a++\n;[1,2,3].forEach()')
-    // (
-    var src = "a++;\n(function () {})()"
-    expect(semi.remove(src)).to.equal('a++\n;(function () {})()')
-    // regex literal
-    var src = "a++;\n/a/.test(b)"
-    expect(semi.remove(src)).to.equal('a++\n;/a/.test(b)')
-  })
-
-  it('should not remove semi as empty statement of if/for/while', function () {
-    // if
-    var src = "if (x);\n"
-    expect(semi.remove(src)).to.equal(src)
-    // else if
-    var src = "if (x);else if (x);\n"
-    expect(semi.remove(src)).to.equal(src)
-    // else
-    var src = "if (x) x\nelse;\n"
-    expect(semi.remove(src)).to.equal(src)
-    // while
-    var src = "while (--x);\n"
-    expect(semi.remove(src)).to.equal(src)
-    // for
-    var src = "for (;;);\n"
-    expect(semi.remove(src)).to.equal(src)
-    // for...in
-    var src = "for (var key in obj);\n"
-    expect(semi.remove(src)).to.equal(src)
-  })
-
-  it('should not add semi for only statement of if/for/while', function () {
-    // if
-    var src = "if (x)\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-    // else if
-    var src = "if (x) x\nelse if (x)\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-    // else
-    var src = "if (x) x\nelse\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-    // while
-    var src = "while (x)\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-    // for
-    var src = "for (;;)\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-    // for...in
-    var src = "for (var key in obj)\n  +x"
-    expect(semi.remove(src)).to.equal(src)
-  })
-
-  it('do...while', function () {
-    // should remove semi
-    var src = "do { x-- } while (x);\n"
-    expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
-
-    // special case. do we really need this?
-
-    // var src = "do { x-- } while (x)\n+x"
-    // expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
-  })
-
-  // special case. do we really need this?
-
-  // it('var statement', function () {
-  //   // should add semi
-  //   var src = "var x\n+x"
-  //   expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
-  // })
-
-})
-
-describe('Add', function () {
-
-  it('eof', function () {
-    var src = 'var a = 123'
-    expect(semi.add(src)).to.equal('var a = 123;')
-  })
-
-  it('newline', function () {
-    var src = "var a = 123\na++\n"
-    expect(semi.add(src)).to.equal('var a = 123;\na++;\n')
-  })
-
-  it('directive', function () {
-    var src = '"use strict"\nvar b = 1'
-    expect(semi.add(src)).to.equal('"use strict";\nvar b = 1;')
-  })
-
-  it('comments before newline semi', function () {
-    var src = "a()\n/**\n* comments\n*/\n;[]"
-    expect(semi.add(src)).to.equal('a();\n/**\n* comments\n*/\n[];')
-  })
-
-  it('before ending brace', function () {
-    var src = 'function a (x) { x++ }'
-    expect(semi.add(src)).to.equal('function a (x) { x++; }')
-  })
-
-  it('do...while', function () {
-    var src = 'do { x-- } while (x)\n++x'
-    expect(semi.add(src)).to.equal('do { x--; } while (x);\n++x;')
-  })
-
-  it('move newline semi to prev line', function () {
-    // +
-    var src = "var a = 1\n  \n;++b"
-    expect(semi.add(src)).to.equal('var a = 1;\n  \n++b;')
-    // -
-    var src = "var a = 1\n  \n;--b"
-    expect(semi.add(src)).to.equal('var a = 1;\n  \n--b;')
-    // [
-    var src = "a++\n;[1,2,3].forEach()"
-    expect(semi.add(src)).to.equal('a++;\n[1,2,3].forEach();')
-    // (
-    var src = "a++\n;(function () {})()"
-    expect(semi.add(src)).to.equal('a++;\n(function () {})();')
-    // regex literal
-    var src = "a++\n;/a/.test(b)"
-    expect(semi.add(src)).to.equal('a++;\n/a/.test(b);')
-  })
-
-})
+suite('remove')
+suite('add')
