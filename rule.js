@@ -13,8 +13,8 @@
 module.exports = function(context) {
 
   var OPT_OUT_PATTERN = /[\[\(\/\+\-]/
-
-  var always = context.options[0] !== "never"
+  var always = context.options[0] !== 'never'
+  var leading = context.options[1] === 'leading'
 
   var specialStatementParentTypes = {
     IfStatement: true,
@@ -54,6 +54,7 @@ module.exports = function(context) {
     var lastToken = context.getLastToken(node)
     var prevToken = context.getTokenBefore(node)
     var nextToken = context.getTokenAfter(node)
+    var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
 
     if (always) {
       // ADD
@@ -63,7 +64,7 @@ module.exports = function(context) {
         context.report(node, lastToken.loc.end, "ADD")
         added = true
       }
-      if (nextToken && OPT_OUT_PATTERN.test(nextToken.value)) {
+      if (isSpecialNewLine) {
         if (lastToken.value === ';') {
           // removing semi from last token of current statement
           context.report(node, lastToken.loc.end, "REMOVE")
@@ -83,9 +84,14 @@ module.exports = function(context) {
         isRemovable(lastToken, nextToken)
       ) {
         context.report(node, node.loc.end, "REMOVE")
+        if (!leading && isSpecialNewLine) {
+          context.report(nextToken, nextToken.loc.start, "ADD")
+        }
       }
       // add leading semicolon if:
       if (
+        // leading option is true
+        leading &&
         // is on a newline
         (!prevToken || firstToken.loc.start.line !== prevToken.loc.end.line) &&
         // starts with special leading token
@@ -139,6 +145,9 @@ module.exports = function(context) {
         !specialStatementParentTypes[node.parent.type]
       ) {
         context.report(node, node.loc.end, "REMOVE")
+        if (!always && leading && isSpecialNewLine) {
+          context.report(nextToken, nextToken.loc.start, "ADD")
+        }
       }
     }
   }

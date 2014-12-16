@@ -87,10 +87,13 @@ function offset (n, inc) {
  * @return {String}
  */
 
-exports.add = function (file) {
+exports.add = function (file, options) {
+  var leading = options && options.leading
+    ? 'leading'
+    : null
   return process(file, {
     rules: {
-      autosemi: [2, 'always']
+      autosemi: [2, 'always', leading]
     },
     plugins: ['eslint-plugin-autosemi']
   })
@@ -103,10 +106,13 @@ exports.add = function (file) {
  * @return {String}
  */
 
-exports.remove = function (file) {
+exports.remove = function (file, options) {
+  var leading = options && options.leading
+    ? 'leading'
+    : null
   return process(file, {
     rules: {
-      autosemi: [2, 'never']
+      autosemi: [2, 'never', leading]
     },
     plugins: ['eslint-plugin-autosemi']
   })

@@ -139,12 +139,16 @@ var testCases = {
       'do { x-- } while (x)\n'
     ],
 
+    // with option - leading: true
+
     'do...while add': [
+      { leading: true },
       'do { x-- } while (x)\n+x',
       'do { x-- } while (x)\n;+x'
     ],
     
     'var statement': [
+      { leading: true },
       'var x\n+x',
       'var x\n;+x'
     ]
@@ -219,9 +223,14 @@ function suite (name) {
     Object.keys(testCases[name]).forEach(function (desc) {
       var tests = testCases[name][desc]
       var assert = function (test) {
+        var options = {}
+        if (typeof test[0] !== 'string') {
+          options = test[0]
+          test = test.slice(1)
+        }
         var src = test[0]
         var expected = test[1]
-        expect(semi[name](src)).to.equal(expected)
+        expect(semi[name](src, options)).to.equal(expected)
       }
       it(desc, function () {
         if (Array.isArray(tests[0])) {

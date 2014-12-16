@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-var argv = require('minimist')(process.argv.slice(2))
+var argv = require('minimist')(process.argv.slice(2), {
+  boolean: ['leading'],
+  string: ['out']
+})
 
 var command = argv._[0]
 if (command !== 'add' && command !== 'rm') {
@@ -19,6 +22,7 @@ var fs = require('fs')
 var path = require('path')
 var mkdirp = require('mkdirp')
 var outDir = argv.out
+var leading = argv.leading
 if (outDir) {
   mkdirp.sync(outDir)
 }
@@ -32,7 +36,9 @@ function convert (file) {
   fs.readFile(file, 'utf-8', function (err, content) {
     if (err) throw err
     if (command === 'rm') command = 'remove'
-    content = semi[command](content)
+    content = semi[command](content, {
+      leading: leading
+    })
     var out = outDir
       ? path.join(outDir, path.basename(file))
       : file
@@ -43,9 +49,11 @@ function convert (file) {
 
 function usage () {
   console.log()
-  console.log('  Usage: semi [add|rm] [files...] [--out dir]')
+  console.log('  Usage: semi [add|rm] [files...] [--out dir] [--leading]')
   console.log()
-  console.log('  If --out is not specified, will overwrite original.')
+  console.log('  Options:')
+  console.log('  --out      Output directory. If not specified, will overwrite original.')
+  console.log('  --leading  Always add leading semicolons for lines that start with +-[(/.')
   console.log()
   process.exit(0)
 }
