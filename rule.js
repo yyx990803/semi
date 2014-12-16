@@ -141,7 +141,7 @@ module.exports = function(context) {
       var lastToken = context.getLastToken(node)
       var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
       if (
-        isRemovable(lastToken, nextToken) &&
+        (always || isRemovable(lastToken, nextToken)) &&
         !specialStatementParentTypes[node.parent.type]
       ) {
         context.report(node, node.loc.end, "REMOVE")

@@ -187,6 +187,11 @@ var testCases = {
       'do { x--; } while (x);\n++x;'
     ],
 
+    'remove leading empty statement': [
+      'function test () {\n;(a || b).push(c)}',
+      'function test () {\n(a || b).push(c);}'
+    ],
+
     'move newline semi to prev line': [
       // +
       [
