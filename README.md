@@ -20,8 +20,13 @@ It was originally implemented by [hacking jshint](https://github.com/yyx990803/j
 
 ``` bash
 npm install -g semi
-# if no --out is specified will overwrite original
-semi [add|remove] [files ...] [--out dir]
+
+Usage: semi [add|rm] [files...] [--out dir] [--leading]
+
+Options:
+
+  --out      Output directory. If not specified, will overwrite original.
+  --leading  Always add leading semicolons for lines that start with +-[(/.
 ```
 
 ### API
@@ -31,10 +36,16 @@ var semi = require('semi')
 // semi.add(<String>)
 var jsWithSemicolons = semi.add(jsWithoutSemicolons)
 // semi.remove(<String>)
-var jsWithoutSemicolons = semi.remove(jsWithSemicolons)
+var jsWithoutSemicolons = semi.remove(jsWithSemicolons, {
+  leading: true
+})
 ```
 
 There's also [Semi for SublimeText3](https://github.com/yyx990803/semi-sublime)!
+
+## It doesn't work!
+
+If it doesn't seem to do anything, it's most likely because your code contains syntax errors.
 
 ## Special Cases
 
@@ -51,6 +62,16 @@ var a = b
 ;(function () {
   /* ... */
 })()
+```
+
+When `leading` option is true, it will add a leading semicolon for all newlines that start with one of those special tokens, even is the code is valid without the semicolon:
+
+``` js
+var a = 123;
+++a;
+// converts to:
+var a = 123
+;++a
 ```
 
 However, it will not do anyting to the following, because there's no way for Semi to tell if you actually wanted to write it like this or not.

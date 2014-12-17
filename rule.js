@@ -13,10 +13,10 @@
 module.exports = function(context) {
 
   var OPT_OUT_PATTERN = /[\[\(\/\+\-]/
+  var always = context.options[0] !== 'never'
+  var leading = context.options[1] === 'leading'
 
-  var always = context.options[0] !== "never"
-
-  var emptyStatementParentTypes = {
+  var specialStatementParentTypes = {
     IfStatement: true,
     WhileStatement: true,
     ForStatement: true,
@@ -50,7 +50,9 @@ module.exports = function(context) {
    */
   function checkForSemicolon(node) {
 
+    var firstToken = context.getFirstToken(node)
     var lastToken = context.getLastToken(node)
+    var prevToken = context.getTokenBefore(node)
     var nextToken = context.getTokenAfter(node)
     var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
 
@@ -82,21 +84,23 @@ module.exports = function(context) {
         isRemovable(lastToken, nextToken)
       ) {
         context.report(node, node.loc.end, "REMOVE")
-        // handle next token speical case
-        if (isSpecialNewLine) {
+        if (!leading && isSpecialNewLine) {
           context.report(nextToken, nextToken.loc.start, "ADD")
         }
       }
-      // special case: adding leading semicolons for newlines after
-      // var declaration and do...while statements
-      //
-      // if (
-      //   isSpecialNewLine &&
-      //   (lastToken.type !== "Punctuator" || lastToken.value !== ";") &&
-      //   (node.type === 'VariableDeclaration' || node.type === 'DoWhileStatement')
-      // ) {
-      //   context.report(nextToken, nextToken.loc.start, "ADD")
-      // }
+      // add leading semicolon if:
+      if (
+        // leading option is true
+        leading &&
+        // is on a newline
+        (!prevToken || firstToken.loc.start.line !== prevToken.loc.end.line) &&
+        // starts with special leading token
+        OPT_OUT_PATTERN.test(firstToken.value) &&
+        // is not the only child statement of if/for/while statements
+        !specialStatementParentTypes[node.parent.type]
+      ) {
+        context.report(node, firstToken.loc.start, "ADD")
+      }
     }
   }
 
@@ -136,14 +140,12 @@ module.exports = function(context) {
     "EmptyStatement": function (node) {
       var lastToken = context.getLastToken(node)
       var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
-      var isSpecialNewLine = OPT_OUT_PATTERN.test(nextToken.value)
-
       if (
-        isRemovable(lastToken, nextToken) &&
-        !emptyStatementParentTypes[node.parent.type]
+        (always || isRemovable(lastToken, nextToken)) &&
+        !specialStatementParentTypes[node.parent.type]
       ) {
         context.report(node, node.loc.end, "REMOVE")
-        if (!always && isSpecialNewLine) {
+        if (!always && leading && isSpecialNewLine) {
           context.report(nextToken, nextToken.loc.start, "ADD")
         }
       }
