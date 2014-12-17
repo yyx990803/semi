@@ -2,7 +2,7 @@
 var argv = require('minimist')(process.argv.slice(2))
 
 var command = argv._[0]
-if (command !== 'add' && command !== 'remove') {
+if (command !== 'add' && command !== 'rm') {
   console.log('Invalid command: ' + command)
   usage()
 }
@@ -31,6 +31,7 @@ function convert (file) {
   if (path.extname(file) !== '.js') return
   fs.readFile(file, 'utf-8', function (err, content) {
     if (err) throw err
+    if (command === 'rm') command = 'remove'
     content = semi[command](content)
     var out = outDir
       ? path.join(outDir, path.basename(file))
@@ -42,7 +43,7 @@ function convert (file) {
 
 function usage () {
   console.log()
-  console.log('  Usage: semi [add|remove] [files...] [--out dir]')
+  console.log('  Usage: semi [add|rm] [files...] [--out dir]')
   console.log()
   console.log('  If --out is not specified, will overwrite original.')
   console.log()

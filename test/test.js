@@ -19,7 +19,7 @@ describe('Remove', function () {
   // 2. do some reformat, such as replace semi with a newline?
   it('newline within multiline comment', function () {
     var src = "var a = 123;/*\n*/a++;\n"
-    //expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
+    expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
   })
 
   it('directive', function () {
@@ -35,6 +35,11 @@ describe('Remove', function () {
   it('inline semi before ending brace', function () {
     var src = 'defer(function () { cb.call(ctx); }, 0);'
     expect(semi.remove(src)).to.equal('defer(function () { cb.call(ctx) }, 0)')
+  })
+
+  it('should not remove same line statements', function () {
+    var src = "a++;;; b++;"
+    expect(semi.remove(src)).to.equal('a++; b++')
   })
 
   it('add newline semi for special initials', function () {
@@ -59,23 +64,18 @@ describe('Remove', function () {
     // if
     var src = "if (x);\n"
     expect(semi.remove(src)).to.equal(src)
-
     // else if
-    var src = "if (x)\nelse if (x);\n"
+    var src = "if (x) {} else if (x);\n"
     expect(semi.remove(src)).to.equal(src)
-
     // else
-    var src = "if (x) x\nelse;\n"
+    var src = "if (x) {}\nelse;\n"
     expect(semi.remove(src)).to.equal(src)
-
     // while
     var src = "while (--x);\n"
     expect(semi.remove(src)).to.equal(src)
-
     // for
     var src = "for (;;);\n"
     expect(semi.remove(src)).to.equal(src)
-
     // for...in
     var src = "for (var key in obj);\n"
     expect(semi.remove(src)).to.equal(src)
@@ -87,27 +87,21 @@ describe('Remove', function () {
     // if
     var src = "if (x)\n  +x"
     expect(semi.remove(src)).to.equal(src)
-
     // else if
     var src = "if (x) x\nelse if (x)\n  +x"
     expect(semi.remove(src)).to.equal(src)
-
     // else
     var src = "if (x) x\nelse\n  +x"
     expect(semi.remove(src)).to.equal(src)
-    
     // while
     var src = "while (x)\n  +x"
     expect(semi.remove(src)).to.equal(src)
-
     // for
     var src = "for (;;)\n  +x"
     expect(semi.remove(src)).to.equal(src)
-
     // for...in
     var src = "for (var key in obj)\n  +x"
     expect(semi.remove(src)).to.equal(src)
-
   })
 
   it('do...while', function () {
@@ -115,16 +109,20 @@ describe('Remove', function () {
     var src = "do { x-- } while (x);\n"
     expect(semi.remove(src)).to.equal(src.replace(/;/g, ''))
 
-    // should add semi
-    var src = "do { x-- } while (x)\n+x"
-    expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
+    // special case. do we really need this?
+
+    // var src = "do { x-- } while (x)\n+x"
+    // expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
   })
 
-  it('var statement', function () {
-    // should add semi
-    var src = "var x\n+x"
-    expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
-  })
+  // special case. do we really need this?
+
+  // it('var statement', function () {
+  //   // should add semi
+  //   var src = "var x\n+x"
+  //   expect(semi.remove(src)).to.equal(src.replace(/\n/, '\n;'))
+  // })
+
 })
 
 describe('Add', function () {
@@ -147,6 +145,16 @@ describe('Add', function () {
   it('comments before newline semi', function () {
     var src = "a()\n/**\n* comments\n*/\n;[]"
     expect(semi.add(src)).to.equal('a();\n/**\n* comments\n*/\n[];')
+  })
+
+  it('before ending brace', function () {
+    var src = 'function a (x) { x++ }'
+    expect(semi.add(src)).to.equal('function a (x) { x++; }')
+  })
+
+  it('do...while', function () {
+    var src = 'do { x-- } while (x)\n++x'
+    expect(semi.add(src)).to.equal('do { x--; } while (x);\n++x;')
   })
 
   it('move newline semi to prev line', function () {

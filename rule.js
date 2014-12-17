@@ -1,0 +1,153 @@
+/**
+ * @fileoverview Rule to insert/remove semicolons, based on the original ESLint
+ *               semi rule.
+ *
+ * @author Nicholas C. Zakas
+ * @author Evan You
+ */
+"use strict"
+
+//------------------------------------------------------------------------------
+// Rule Definition
+//------------------------------------------------------------------------------
+module.exports = function(context) {
+
+  var OPT_OUT_PATTERN = /[\[\(\/\+\-]/
+
+  var always = context.options[0] !== "never"
+
+  var emptyStatementParentTypes = {
+    IfStatement: true,
+    WhileStatement: true,
+    ForStatement: true,
+    ForInStatement: true
+  }
+
+  //----------------------------------------------------------------------------
+  // Helpers
+  //----------------------------------------------------------------------------
+
+  /**
+   * Check if a semicolon is removable. We should only remove the semicolon if:
+   *   - next token is a statement divider ("}" or ";")
+   *   - next token is on a new line
+   *
+   * @param {Token} last
+   * @param {Token} next
+   */
+  function isRemovable (last, next) {
+    var lastTokenLine = last.loc.end.line
+    var nextTokenLine = next && next.loc.start.line
+    var isDivider = next && (next.value === '}' || next.value === ';')
+    return isDivider || (lastTokenLine !== nextTokenLine)
+  }
+
+  /**
+   * Checks a node to see if it's followed by a semicolon.
+   *
+   * @param {ASTNode} node The node to check.
+   * @returns {void}
+   */
+  function checkForSemicolon(node) {
+
+    var lastToken = context.getLastToken(node)
+    var nextToken = context.getTokenAfter(node)
+    var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
+
+    if (always) {
+      // ADD
+      var added = false
+      if (lastToken.type !== "Punctuator" || lastToken.value !== ";") {
+        // missing semi. add semi after last token of current statement
+        context.report(node, lastToken.loc.end, "ADD")
+        added = true
+      }
+      if (isSpecialNewLine) {
+        if (lastToken.value === ';') {
+          // removing semi from last token of current statement
+          context.report(node, lastToken.loc.end, "REMOVE")
+          lastToken = context.getLastToken(node, 1)
+        }
+        // don't add again if we already added a semicolon
+        if (!added) {
+          // add semi to second last token of current statement
+          context.report(node, lastToken.loc.end, "ADD")
+        }
+      }
+    } else {
+      // REMOVE
+      if (
+        lastToken.type === "Punctuator" &&
+        lastToken.value === ";" &&
+        isRemovable(lastToken, nextToken)
+      ) {
+        context.report(node, node.loc.end, "REMOVE")
+        // handle next token speical case
+        if (isSpecialNewLine) {
+          context.report(nextToken, nextToken.loc.start, "ADD")
+        }
+      }
+      // special case: adding leading semicolons for newlines after
+      // var declaration and do...while statements
+      //
+      // if (
+      //   isSpecialNewLine &&
+      //   (lastToken.type !== "Punctuator" || lastToken.value !== ";") &&
+      //   (node.type === 'VariableDeclaration' || node.type === 'DoWhileStatement')
+      // ) {
+      //   context.report(nextToken, nextToken.loc.start, "ADD")
+      // }
+    }
+  }
+
+  /**
+   * Checks to see if there's a semicolon after a variable declaration.
+   *
+   * @param {ASTNode} node The node to check.
+   * @returns {void}
+   */
+  function checkForSemicolonForVariableDeclaration(node) {
+
+    var ancestors = context.getAncestors()
+    var parentIndex = ancestors.length - 1
+    var parent = ancestors[parentIndex]
+
+    if (
+      (parent.type !== "ForStatement" || parent.init !== node) &&
+      (parent.type !== "ForInStatement" || parent.left !== node)
+    ) {
+      checkForSemicolon(node)
+    }
+  }
+
+  //--------------------------------------------------------------------------
+  // Public API
+  //--------------------------------------------------------------------------
+
+  return {
+
+    "VariableDeclaration": checkForSemicolonForVariableDeclaration,
+    "ExpressionStatement": checkForSemicolon,
+    "ReturnStatement": checkForSemicolon,
+    "DebuggerStatement": checkForSemicolon,
+    "BreakStatement": checkForSemicolon,
+    "ContinueStatement": checkForSemicolon,
+    "DoWhileStatement": checkForSemicolon,
+    "EmptyStatement": function (node) {
+      var lastToken = context.getLastToken(node)
+      var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
+      var isSpecialNewLine = OPT_OUT_PATTERN.test(nextToken.value)
+
+      if (
+        isRemovable(lastToken, nextToken) &&
+        !emptyStatementParentTypes[node.parent.type]
+      ) {
+        context.report(node, node.loc.end, "REMOVE")
+        if (!always && isSpecialNewLine) {
+          context.report(nextToken, nextToken.loc.start, "ADD")
+        }
+      }
+    }
+  }
+
+}
