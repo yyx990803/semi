@@ -1,6 +1,6 @@
 {
   "name": "semi",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "To semicolon or not to semicolon; that is the question",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,9 @@
   "bin": {
     "semi": "./bin/semi"
   },
-  "author": "Evan You",
+  "author": {
+    "name": "Evan You"
+  },
   "license": "MIT",
   "devDependencies": {
     "chai": "^1.10.0",
