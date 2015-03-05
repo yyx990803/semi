@@ -140,6 +140,7 @@ module.exports = function(context) {
     "EmptyStatement": function (node) {
       var lastToken = context.getLastToken(node)
       var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
+      var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
       if (
         (always || isRemovable(lastToken, nextToken)) &&
         !specialStatementParentTypes[node.parent.type]
