@@ -2,6 +2,27 @@ var linter = require('eslint').linter
 var offsets
 var lines
 
+var ecmaFeatures = {
+  arrowFunctions: true,
+  binaryLiterals: true,
+  blockBindings: true,
+  defaultParams: true,
+  forOf: true,
+  generators: true,
+  objectLiteralComputedProperties: true,
+  objectLiteralDuplicateProperties: true,
+  objectLiteralShorthandMethods: true,
+  objectLiteralShorthandProperties: true,
+  octalLiterals: true,
+  regexUFlag: true,
+  regexYFlag: true,
+  superInFunctions: true,
+  templateStrings: true,
+  unicodeCodePointEscapes: true,
+  globalReturn: true,
+  jsx: true,
+}
+
 // define our custom rule
 linter.defineRule('autosemi', require('./rule'))
 
@@ -76,7 +97,7 @@ function offset (n, inc) {
   if (!offsets[n]) {
     offsets[n] = 0 + inc
   } else {
-    offsets[n] += inc 
+    offsets[n] += inc
   }
 }
 
@@ -95,6 +116,7 @@ exports.add = function (file, options) {
     rules: {
       autosemi: [2, 'always', leading]
     },
+    ecmaFeatures: ecmaFeatures,
     plugins: ['eslint-plugin-autosemi']
   })
 }
@@ -114,6 +136,7 @@ exports.remove = function (file, options) {
     rules: {
       autosemi: [2, 'never', leading]
     },
+    ecmaFeatures: ecmaFeatures,
     plugins: ['eslint-plugin-autosemi']
   })
 }
