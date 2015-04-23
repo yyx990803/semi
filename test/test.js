@@ -147,10 +147,36 @@ var testCases = {
       'do { x-- } while (x)\n;+x'
     ],
     
-    'var statement': [
+    'var declaration': [
       { leading: true },
       'var x\n+x',
       'var x\n;+x'
+    ],
+
+    'let declaration': [
+      { leading: true },
+      'let x\n+x',
+      'let x\n;+x'
+    ],
+
+    'import declaration': [
+      'import { a } from "./a";',
+      'import { a } from "./a"'
+    ],
+
+    'export named declaration': [
+      'export { a, b };',
+      'export { a, b }'
+    ],
+
+    'export default declaration': [
+      'export default a;',
+      'export default a'
+    ],
+
+    'export all declaration': [
+      'export * from "./other-module";',
+      'export * from "./other-module"'
     ]
 
   },
@@ -218,6 +244,26 @@ var testCases = {
         'a++\n;/a/.test(b)',
         'a++;\n/a/.test(b);'
       ]
+    ],
+
+    'import declaration': [
+      'import { a } from "./a"',
+      'import { a } from "./a";'
+    ],
+
+    'export named declaration': [
+      'export { a, b }',
+      'export { a, b };'
+    ],
+
+    'export default declaration': [
+      'export default a',
+      'export default a;'
+    ],
+
+    'export all declaration': [
+      'export * from "./other-module"',
+      'export * from "./other-module";'
     ]
   }
   

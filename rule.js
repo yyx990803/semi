@@ -126,33 +126,47 @@ module.exports = function(context) {
     }
   }
 
+  /**
+   * Check an empty statement to remove ecessive or add leading semicolons.
+   *
+   * @param {ASTNode} node The node to check.
+   * @returns {void}
+   */
+  function checkEmptyStatement (node) {
+    var lastToken = context.getLastToken(node)
+    var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
+    var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
+    if (
+      (always || isRemovable(lastToken, nextToken)) &&
+      !specialStatementParentTypes[node.parent.type]
+    ) {
+      context.report(node, node.loc.end, "REMOVE")
+      if (!always && leading && isSpecialNewLine) {
+        context.report(nextToken, nextToken.loc.start, "ADD")
+      }
+    }
+  }
+
   //--------------------------------------------------------------------------
   // Public API
   //--------------------------------------------------------------------------
 
   return {
-
-    "VariableDeclaration": checkForSemicolonForVariableDeclaration,
     "ExpressionStatement": checkForSemicolon,
     "ReturnStatement": checkForSemicolon,
     "DebuggerStatement": checkForSemicolon,
     "BreakStatement": checkForSemicolon,
     "ContinueStatement": checkForSemicolon,
     "DoWhileStatement": checkForSemicolon,
-    "EmptyStatement": function (node) {
-      var lastToken = context.getLastToken(node)
-      var nextToken = context.getTokenAfter(node) || context.getLastToken(node)
-      var isSpecialNewLine = nextToken && OPT_OUT_PATTERN.test(nextToken.value)
-      if (
-        (always || isRemovable(lastToken, nextToken)) &&
-        !specialStatementParentTypes[node.parent.type]
-      ) {
-        context.report(node, node.loc.end, "REMOVE")
-        if (!always && leading && isSpecialNewLine) {
-          context.report(nextToken, nextToken.loc.start, "ADD")
-        }
-      }
-    }
+    // empty statement
+    "EmptyStatement": checkEmptyStatement,
+    // variable declaration
+    "VariableDeclaration": checkForSemicolonForVariableDeclaration,
+    // ES6 additions
+    "ImportDeclaration": checkForSemicolon,
+    "ExportDefaultDeclaration": checkForSemicolon,
+    "ExportNamedDeclaration": checkForSemicolon,
+    "ExportAllDeclaration": checkForSemicolon
   }
 
 }
