@@ -106,7 +106,10 @@ module.exports = function(context) {
   }
 
   /**
-   * Checks to see if there's a semicolon after a variable declaration.
+   * Checks to see if there's a semicolon after a variable declaration,
+   * but only if the declaration is not within a for... statement.
+   *
+   * e.g. for (var i = 0; i < 10; i++) ...
    *
    * @param {ASTNode} node The node to check.
    * @returns {void}

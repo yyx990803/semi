@@ -98,6 +98,11 @@ var testCases = {
       [
         'for (var key in obj);\n',
         'for (var key in obj);\n'
+      ],
+      // for...of
+      [
+        'for (let n of iterable);\n',
+        'for (let n of iterable);\n'
       ]
     ],
 
@@ -153,11 +158,7 @@ var testCases = {
       'var x\n;+x'
     ],
 
-    'let declaration': [
-      { leading: true },
-      'let x\n+x',
-      'let x\n;+x'
-    ],
+    // ES6
 
     'import declaration': [
       'import { a } from "./a";',
@@ -177,6 +178,13 @@ var testCases = {
     'export all declaration': [
       'export * from "./other-module";',
       'export * from "./other-module"'
+    ],
+
+    // ES6 + leading: true
+    'let declaration': [
+      { leading: true },
+      'let x\n+x',
+      'let x\n;+x'
     ]
 
   },
@@ -245,6 +253,8 @@ var testCases = {
         'a++;\n/a/.test(b);'
       ]
     ],
+
+    // ES6
 
     'import declaration': [
       'import { a } from "./a"',
