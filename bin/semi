@@ -7,7 +7,7 @@ var argv = require('minimist')(process.argv.slice(2), {
 
 var command = argv._[0]
 if (command !== 'add' && command !== 'rm') {
-  console.log('Invalid command: ' + command)
+  if (command) console.log('Invalid command: ' + command)
   usage()
 }
 
@@ -17,7 +17,7 @@ if (!files.length) {
   usage()
 }
 
-var semi = require('../index')
+var semi = require('../lib')
 var findit = require('findit')
 var fs = require('fs')
 var path = require('path')
@@ -25,9 +25,22 @@ var mkdirp = require('mkdirp')
 var outDir = argv.out
 var leading = argv.leading
 var silent = argv.silent
+// file processing state
+var currentFile
+var currentFileErrored
+
 if (outDir) {
   mkdirp.sync(outDir)
 }
+
+semi.on('error', function (e) {
+  currentFileErrored = true
+  console.log(
+    '[semi] Error: ' + e.message + ' at ' +
+    e.line + ':' + e.column + ' in ' +
+    currentFile
+  )
+})
 
 files.forEach(function (file) {
   findit(file).on('file', convert)
@@ -35,12 +48,15 @@ files.forEach(function (file) {
 
 function convert (file) {
   if (path.extname(file) !== '.js') return
+  currentFile = file
+  currentFileErrored = false
   fs.readFile(file, 'utf-8', function (err, content) {
     if (err) throw err
     if (command === 'rm') command = 'remove'
     content = semi[command](content, {
       leading: leading
     })
+    if (currentFileErrored) return
     var out = outDir
       ? path.join(outDir, path.basename(file))
       : file

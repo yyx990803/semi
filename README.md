@@ -2,7 +2,7 @@
 
 > To semicolon or not to semicolon; that is the question
 
-Add/remove semicolons from your JavaScript.
+Add/remove semicolons from your JavaScript. Supports full ES6 via Babel.js' parser.
 
 ## Why???
 
@@ -33,6 +33,10 @@ Options:
 
 ``` js
 var semi = require('semi')
+
+// handle errors
+semi.on('error', function () { /* ... */ })
+
 // semi.add(<String>)
 var jsWithSemicolons = semi.add(jsWithoutSemicolons)
 // semi.remove(<String>)
