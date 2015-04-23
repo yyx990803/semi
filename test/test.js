@@ -1,5 +1,5 @@
 var expect = require('chai').expect
-var semi = require('../index')
+var semi = require('../lib')
 
 var testCases = {
 

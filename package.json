@@ -2,7 +2,7 @@
   "name": "semi",
   "version": "3.2.0",
   "description": "To semicolon or not to semicolon; that is the question",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/yyx990803/semi.git"
@@ -23,6 +23,7 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
+    "babel-eslint": "^3.0.1",
     "eslint": "^0.19",
     "findit": "^2.0.0",
     "minimist": "^1.1.0",
