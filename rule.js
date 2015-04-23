@@ -20,7 +20,8 @@ module.exports = function(context) {
     IfStatement: true,
     WhileStatement: true,
     ForStatement: true,
-    ForInStatement: true
+    ForInStatement: true,
+    ForOfStatement: true,
   }
 
   //----------------------------------------------------------------------------
@@ -118,7 +119,8 @@ module.exports = function(context) {
 
     if (
       (parent.type !== "ForStatement" || parent.init !== node) &&
-      (parent.type !== "ForInStatement" || parent.left !== node)
+      (parent.type !== "ForInStatement" || parent.left !== node) &&
+      (parent.type !== "ForOfStatement" || parent.left !== node)
     ) {
       checkForSemicolon(node)
     }
