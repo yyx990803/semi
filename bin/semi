@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 var argv = require('minimist')(process.argv.slice(2), {
   boolean: ['leading'],
-  string: ['out']
+  string: ['out'],
+  boolean: ['silent']
 })
 
 var command = argv._[0]
@@ -23,6 +24,7 @@ var path = require('path')
 var mkdirp = require('mkdirp')
 var outDir = argv.out
 var leading = argv.leading
+var silent = argv.silent
 if (outDir) {
   mkdirp.sync(outDir)
 }
@@ -42,18 +44,19 @@ function convert (file) {
     var out = outDir
       ? path.join(outDir, path.basename(file))
       : file
-    console.log('converted: ' + out)
+    if (!silent) console.log('converted: ' + out)
     fs.writeFile(out, content)
   })
 }
 
 function usage () {
   console.log()
-  console.log('  Usage: semi [add|rm] [files...] [--out dir] [--leading]')
+  console.log('  Usage: semi [add|rm] [files...] [--out dir] [--leading] [--silent]')
   console.log()
   console.log('  Options:')
   console.log('  --out      Output directory. If not specified, will overwrite original.')
   console.log('  --leading  Always add leading semicolons for lines that start with +-[(/.')
+  console.log('  --silent   Suppress output messages.')
   console.log()
   process.exit(0)
 }
