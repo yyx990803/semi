@@ -21,12 +21,13 @@ It was originally implemented by [hacking jshint](https://github.com/yyx990803/j
 ``` bash
 npm install -g semi
 
-Usage: semi [add|rm] [files...] [--out dir] [--leading]
+Usage: semi [add|rm] [files...] [--out dir] [--leading] [--silent]
 
 Options:
 
   --out      Output directory. If not specified, will overwrite original.
   --leading  Always add leading semicolons for lines that start with +-[(/.
+  --silent   Suppress output messages.
 ```
 
 ### API
