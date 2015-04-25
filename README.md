@@ -2,7 +2,7 @@
 
 > To semicolon or not to semicolon; that is the question
 
-Add/remove semicolons from your JavaScript. Supports full ES6 via Babel.js' parser.
+Add/remove semicolons from your JavaScript. Supports full ES6!
 
 ## Why???
 
