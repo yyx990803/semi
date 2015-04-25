@@ -36,7 +36,7 @@ Options:
 var semi = require('semi')
 
 // handle errors
-semi.on('error', function () { /* ... */ })
+semi.on('error', function (err) { /* ... */ })
 
 // semi.add(<String>)
 var jsWithSemicolons = semi.add(jsWithoutSemicolons)
@@ -69,7 +69,7 @@ var a = b
 })()
 ```
 
-When `leading` option is true, it will add a leading semicolon for all newlines that start with one of those special tokens, even is the code is valid without the semicolon:
+When `leading` option is true, it will add a leading semicolon for all newlines that start with one of those special tokens, even if the code is valid without the semicolon:
 
 ``` js
 var a = 123;
@@ -79,7 +79,7 @@ var a = 123
 ;++a
 ```
 
-However, it will not do anyting to the following, because there's no way for Semi to tell if you actually wanted to write it like this or not.
+However, it will not do anything to the following, because it is valid JavaScript and Semi cannot safely assume you wanted a semicolon there.
 
 ``` js
 var a = b
