@@ -30,6 +30,11 @@ var testCases = {
       'var a = b'
     ],
 
+    'throw statement': [
+      'throw new Error("semicolon");',
+      'throw new Error("semicolon")'
+    ],
+
     'inline semi before ending brace': [
       'defer(function () { cb.call(ctx); }, 0);',
       'defer(function () { cb.call(ctx) }, 0)'
@@ -224,6 +229,11 @@ var testCases = {
     'remove leading empty statement': [
       'function test () {\n;(a || b).push(c)}',
       'function test () {\n(a || b).push(c);}'
+    ],
+
+    'throw statement': [
+      'throw new Error("semicolon")',
+      'throw new Error("semicolon");'
     ],
 
     'move newline semi to prev line': [
