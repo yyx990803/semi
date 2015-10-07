@@ -8,7 +8,7 @@ Add/remove semicolons from your JavaScript. Supports full ES6!
 
 Because style.
 
-On a more serious note, some people (including me) feel more comfortable and productive when writing JavaScript without semicolons. (If you don't agree, [read this](#but-semicolons-are-required)) However, this is often not viable in a team environment, or when working on a project with established code style requirements.
+On a more serious note, some people (including me) feel more comfortable and productive when writing JavaScript without semicolons. (If you disagree, [read this](#but-semicolons-are-required)) However, this is often not viable in a team environment, or when working on a project with established code style requirements.
 
 As a solution to this problem, Semi can add semicolons to files written in a semicolon-less style, and can also remove semicolons from those written with semicolons. This allows you to write code in the style you like and just auto convert it before committing your code.
 
