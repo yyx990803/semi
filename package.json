@@ -1,6 +1,6 @@
 {
   "name": "semi",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "To semicolon or not to semicolon; that is the question",
   "main": "lib/index.js",
   "repository": {
