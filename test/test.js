@@ -156,7 +156,7 @@ var testCases = {
       'do { x-- } while (x)\n+x',
       'do { x-- } while (x)\n;+x'
     ],
-    
+
     'var declaration': [
       { leading: true },
       'var x\n+x',
@@ -183,6 +183,12 @@ var testCases = {
     'export all declaration': [
       'export * from "./other-module";',
       'export * from "./other-module"'
+    ],
+
+    // #10
+    'exporting an arrow function that returns expression in parens': [
+      'export const test = () => ({});',
+      'export const test = () => ({})'
     ],
 
     // ES6 + leading: true
@@ -286,7 +292,7 @@ var testCases = {
       'export * from "./other-module";'
     ]
   }
-  
+
 }
 
 function suite (name) {
