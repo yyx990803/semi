@@ -1,3 +1,9 @@
+## Warning
+
+Although this project should still work reasonably well, maintenance is no longer intended for this project since ESLint 2.x now supports the same functionality by using `--fix` command line flag with the `semi` rule.
+
+---
+
 # Semi [![npm version](https://badge.fury.io/js/semi.svg)](http://badge.fury.io/js/semi) [![Build Status](https://travis-ci.org/yyx990803/semi.svg?branch=master)](https://travis-ci.org/yyx990803/semi)
 
 > To semicolon or not to semicolon; that is the question
