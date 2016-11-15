@@ -47,7 +47,7 @@ files.forEach(function (file) {
 })
 
 function convert (file) {
-  if (path.extname(file) !== '.js') return
+  if (['.js','.ts'].indexOf(path.extname(file)) === -1) return
   currentFile = file
   currentFileErrored = false
   fs.readFile(file, 'utf-8', function (err, content) {
